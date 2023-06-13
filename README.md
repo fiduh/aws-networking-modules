@@ -22,8 +22,6 @@ Click on each module above to see its documentation. Head over to the example fo
 
 What is a module?
 
-How do you use a module?
-
 Using a Terraform Module
 
 What's a VPC?
