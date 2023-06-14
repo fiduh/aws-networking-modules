@@ -24,7 +24,7 @@ Click on each module above to see its documentation. Head over to the example fo
 Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster or an Auto Scaling Group defined as reusable code. Modules are versioned using Semantic Versioning to allow users access the latest infrastructure best practices in a systematic way.
 
 #### Using a Terraform Module
-To use a module in your Terraform templates, create a module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backwards incompatible changes. For example, to use <mark>v1.0.8</mark> of the vpc module, you would add the following:
+To use a module in your Terraform templates, create a module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backwards incompatible changes. For example, to use <mark style="background-color: lightblue">v1.0.8</mark> of the vpc module, you would add the following:
 
 ```
 
