@@ -24,7 +24,7 @@ Click on each module above to see its documentation. Head over to the example fo
 Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster or an Auto Scaling Group defined as reusable code. Modules are versioned using Semantic Versioning to allow users access the latest infrastructure best practices in a systematic way.
 
 #### Using a Terraform Module
-To use a module in your Terraform templates, create a module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backwards incompatible changes. For example, to use == v1.0.8 == of the vpc module, you would add the following:
+To use a module in your Terraform templates, create a module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backwards incompatible changes. For example, to use ==v1.0.8== of the vpc module, you would add the following:
 
 ```
 
@@ -44,9 +44,9 @@ Note: the double slash (//) is intentional and required. it's part of Terraform'
 
 #### Versioning
 We are following the principles of [Semantic Versioning](https://semver.org/). During initial development, the major version is 0 (e.g., == 0.x.y ==), which indicates the code does not yet have a stable API. Once we hit ==1.0.0==, we follow these rules:
-1. Increment the patch version for backwards-compatible bug fix (e.g., == v1.0.8 -> v1.0.9 ==).
-2. Increment the minor version for new features that are backwards-compatible (e.g., == v1.0.8 -> 1.1.0 ==
-3. Increment the major version for any backwards-incompatible changes (e.g. == 1.0.8 -> 2.0.0 ==).
+1. Increment the patch version for backwards-compatible bug fix (e.g., ==v1.0.8 -> v1.0.9==).
+2. Increment the minor version for new features that are backwards-compatible (e.g., ==v1.0.8 -> 1.1.0==
+3. Increment the major version for any backwards-incompatible changes (e.g. ==1.0.8 -> 2.0.0==).
 
 The version is defined using Git tags. Use GitHub to create a release, which will have the effect of adding a git tag.
 
