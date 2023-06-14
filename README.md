@@ -20,7 +20,8 @@ There are several supporting modules that add extra functionality on top of vpc-
 
 Click on each module above to see its documentation. Head over to the example folder for example implemtations.
 
-What is a module?
+##### What is a module?
+Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster or an Auto Scaling Group defined as reusable code. Modules are versioned using Semantic Versioning to allow users access the latest infrastructure best practices in a systematic way.
 
 Using a Terraform Module
 
