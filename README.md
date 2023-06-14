@@ -43,7 +43,7 @@ Note: the double slash (//) is intentional and required. it's part of Terraform'
 ### Developing a module
 
 #### Versioning
-We are following the principles of [Semantic Versioning](https://semver.org/). During initial development, the major version is 0 (e.g., == 0.x.y ==), which indicates the code does not yet have a stable API. Once we hit `1.0.0` we follow these rules:
+We are following the principles of [Semantic Versioning](https://semver.org/). During initial development, the major version is 0 (e.g., `0.x.y`), which indicates the code does not yet have a stable API. Once we hit `1.0.0` we follow these rules:
 1. Increment the patch version for backwards-compatible bug fix (e.g., `v1.0.8 -> v1.0.9`).
 2. Increment the minor version for new features that are backwards-compatible (e.g.,`v1.0.8 -> 1.1.0`).
 3. Increment the major version for any backwards-incompatible changes (e.g.`1.0.8 -> 2.0.0`).
