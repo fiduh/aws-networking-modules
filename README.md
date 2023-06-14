@@ -23,13 +23,23 @@ Click on each module above to see its documentation. Head over to the example fo
 #### What is a module?
 Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster or an Auto Scaling Group defined as reusable code. Modules are versioned using Semantic Versioning to allow users access the latest infrastructure best practices in a systematic way.
 
-Using a Terraform Module
+#### Using a Terraform Module
+To use a module in your Terraform templates, create a module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backwards incompatible changes. For example, to use v1.0.8 of the vpc module, you would add the following:
 
-What's a VPC?
+` module "ecs_cluster" {
+  source = "git::git@github.com:/osemiduh/aws-networking-modules/modules/vpc-microservices?ref=v1.0.8"
 
-Developing a module
+  // set the parameters for the vpc-microservices module
+} `
 
-Versioning
+Note: the double slash (//) is intentional and required. it's part of Terraform's Git syntax. See the module's documentation and vars.tf file for all the parameters you can set. Run ` terraform get -update` to pull the latest version of this module from this repo before running the standard terraform plan and terraform apply commands.
 
-License
+#### What's a VPC?
+
+### Developing a module
+
+#### Versioning
+
+
+#### License
 Please see License.txt for details on how the code in this repo is licensed.
