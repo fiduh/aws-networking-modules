@@ -40,6 +40,14 @@ Note: the double slash (//) is intentional and required. it's part of Terraform'
 
 #### What's a VPC?
 
+AWS VPC
+
+VPC is your logically isolated virtual network on Amazon’s public cloud, where you can deploy your own resources. It spans an entire region, made up of several Availability Zones. You can further divide your network into multiple smaller networks called subnets, where you can create AWS resources, such as EC2 instances.
+
+To allow communication between resources in your VPC and the internet, you need an internet gateway attached to the VPC, route tables directing local traffic to the IGW has to be associated with the subnets that needs access to the internet
+
+To secure this network, NACLs determine which traffic is allowed in and out of your subnets, Security groups control which traffic are allowed to reach the resources you deployed in your network
+
 ### Developing a module
 
 #### Versioning
