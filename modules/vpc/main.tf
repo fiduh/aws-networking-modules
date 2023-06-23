@@ -77,11 +77,11 @@ resource "aws_subnet" "private" {
   }
 }
 
-/*
+
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "example"
+    Name = "private-rt"
   }
 }
 
@@ -94,11 +94,11 @@ resource "aws_route_table_association" "private" {
 resource "aws_route" "private_internet_gateway" {
   route_table_id            = aws_route_table.private.id
   destination_cidr_block    = "0.0.0.0/0"
-  nat_gateway_id = aws_internet_gateway.igw.id
+  nat_gateway_id = aws_nat_gateway.example.id
   depends_on                = [aws_route_table.private]
 }
 
-*/
+
 
 ################################################################################
 # Internet Gateway
