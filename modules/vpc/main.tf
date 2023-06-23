@@ -114,3 +114,22 @@ resource "aws_internet_gateway" "igw" {
 ################################################################################
 # NAT Gateway
 ################################################################################
+
+
+resource "aws_nat_gateway" "example" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = local.public_subnets_ids[0]
+
+  tags = {
+    Name = "gw NAT"
+  }
+
+  # To ensure proper ordering, it is recommended to add an explicit dependency
+  # on the Internet Gateway for the VPC.
+  depends_on = [aws_internet_gateway.igw]
+}
+
+
+resource "aws_eip" "nat" {
+  domain   = "vpc"
+}
