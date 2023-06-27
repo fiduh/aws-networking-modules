@@ -84,7 +84,7 @@ resource "aws_subnet" "private" {
 }
 
 
-resource "aws_route_table" "private" {
+resource "aws_route_table" "rt_for_nat_per_az" {
   for_each = var.private_subnets_cidr_with_azs
   vpc_id = aws_vpc.vpc.id
   tags = {
@@ -93,13 +93,29 @@ resource "aws_route_table" "private" {
 }
 
 
-resource "aws_route_table_association" "private" {
+resource "aws_route_table_association" "rt_per_private_subnet" {
   for_each = var.private_subnets_cidr_with_azs
   subnet_id      = aws_subnet.private[each.key].id
-  route_table_id = aws_route_table.private[each.key].id
+  route_table_id = aws_route_table.rt_for_nat_per_az[each.key].id
 
   depends_on = [ aws_subnet.private ]
 }
+
+
+
+locals {
+  nat_rt_ids = values(aws_route_table.rt_for_nat_per_az)[*].id
+}
+
+resource "aws_route" "private_rt_nat_entry_per_az" {
+  count = var.one_nat_gateway_per_az ? length(var.private_subnets_cidr_with_azs) : 0
+  route_table_id            = local.nat_rt_ids[count.index]
+  destination_cidr_block    = "0.0.0.0/0"
+  nat_gateway_id = aws_nat_gateway.nat_per_az[count.index].id
+  depends_on                = [aws_route_table.rt_for_nat_per_az]
+  
+}
+
 
 /*
 resource "aws_route" "private_route_single" {
@@ -110,19 +126,6 @@ resource "aws_route" "private_route_single" {
   depends_on                = [aws_route_table.private]
 }
 */
-
-locals {
-  demo = values(aws_route_table.private)[*].id
-}
-
-resource "aws_route" "private_rt_nat_entry_per_az" {
-  count = var.one_nat_gateway_per_az ? length(var.private_subnets_cidr_with_azs) : 0
-  route_table_id            = local.demo[count.index]
-  destination_cidr_block    = "0.0.0.0/0"
-  nat_gateway_id = aws_nat_gateway.nat_per_az[count.index].id
-  depends_on                = [aws_route_table.private]
-  
-}
 
 
 ################################################################################
