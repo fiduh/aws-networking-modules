@@ -22,4 +22,14 @@ variable "private_subnets_cidr_with_azs" {
   default = {}
 }
 
+variable "enable_single_nat" {
+  type = bool
+  description = "Enable single a single NAT gateway"
+  default = false
+}
 
+variable "one_nat_gateway_per_az" {
+  type = bool
+  description = "Enable NAT in all AZs"
+  default = false
+}
