@@ -27,10 +27,15 @@ To use a module in your Terraform templates, create a module resources and set i
 
 ```
 
-module "ecs_cluster" {
+module "vpc" {
   source = "git::git@github.com:/osemiduh/aws-networking-modules/modules/vpc-microservices?ref=v1.0.8"
-
+  name = "vpc-app"
+  cidr = 10.0.0.0/21
   // set the parameters for the vpc-microservices module
+  
+
+  tags = {
+    ManagedBy : "Terraform" 
 } 
 
 ```
