@@ -4,7 +4,7 @@ Create a Virtual Private Cloud (VPC). Includes multiple Subnet tiers, NACLs, NAT
 This repo contains modules for creating production grade network topology and it's components on AWS
 
 #### Main Modules
-The three main modules are:
+The Two main modules are:
 
 * vpc-microservices: Launch a vpc meant to house public facing and stateless applications. the VPC includes 2 tiers of subnets (public, hybrid app), internet gateway, routing rules, network access control list, security groups, NAT gateways, egress only gateways.
 
