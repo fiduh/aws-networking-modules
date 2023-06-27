@@ -71,7 +71,7 @@ resource "aws_route" "public_igw_rt_entry" {
 # Private Subnets
 ################################################################################
 resource "aws_subnet" "private" {
-  for_each = var.private_subnets_cidr_with_azs
+  for_each =  var.private_subnets_cidr_with_azs
   vpc_id     = aws_vpc.vpc.id
   cidr_block = each.value
 
@@ -85,7 +85,7 @@ resource "aws_subnet" "private" {
 
 
 resource "aws_route_table" "rt_for_nat_per_az" {
-  for_each = var.private_subnets_cidr_with_azs
+  for_each = var.one_nat_gateway_per_az ? var.private_subnets_cidr_with_azs : {}
   vpc_id = aws_vpc.vpc.id
   tags = {
     Name = "private-rt-${each.key}"
@@ -94,7 +94,7 @@ resource "aws_route_table" "rt_for_nat_per_az" {
 
 
 resource "aws_route_table_association" "rt_per_private_subnet" {
-  for_each = var.private_subnets_cidr_with_azs
+  for_each = var.one_nat_gateway_per_az ? var.private_subnets_cidr_with_azs : {}
   subnet_id      = aws_subnet.private[each.key].id
   route_table_id = aws_route_table.rt_for_nat_per_az[each.key].id
 
@@ -117,15 +117,30 @@ resource "aws_route" "private_rt_nat_entry_per_az" {
 }
 
 
-/*
-resource "aws_route" "private_route_single" {
+resource "aws_route_table" "rt_for_single_nat" {
   count = var.enable_single_nat ? 1 : 0
-  route_table_id            = aws_route_table.private[0].id
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "single-private-rt"
+  }
+}
+
+resource "aws_route" "nat_single_route" {
+  count = var.enable_single_nat ? 1 : 0
+  route_table_id            = aws_route_table.rt_for_single_nat[0].id
   destination_cidr_block    = "0.0.0.0/0"
   nat_gateway_id = aws_nat_gateway.example[0].id
-  depends_on                = [aws_route_table.private]
+  depends_on                = [aws_route_table.rt_for_single_nat]
 }
-*/
+
+resource "aws_route_table_association" "nat_single_subnet" {
+  count = var.enable_single_nat ? length(var.private_subnets_cidr_with_azs) : 0
+  subnet_id      = local.private_subnets_ids[count.index]
+  route_table_id = aws_route_table.rt_for_single_nat[0].id
+
+  depends_on = [aws_subnet.private]
+}
+
 
 
 ################################################################################
