@@ -62,11 +62,11 @@ We are following the principles of [Semantic Versioning](https://semver.org/). D
 
 The version is defined using Git tags. Use GitHub UI to create a release, which will create a tag under the hood, or you can use the Git CLI:
 
-'''
+```
 git tag -a "v0.0.1" -m "First release"
 git push --follow-tags
 
-'''
+```
 
 
 #### License
