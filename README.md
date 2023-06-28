@@ -60,7 +60,13 @@ We are following the principles of [Semantic Versioning](https://semver.org/). D
 2. Increment the minor version for new features that are backwards-compatible (e.g.,`v1.0.8 -> 1.1.0`).
 3. Increment the major version for any backwards-incompatible changes (e.g.`1.0.8 -> 2.0.0`).
 
-The version is defined using Git tags. Use GitHub to create a release, which will have the effect of adding a git tag.
+The version is defined using Git tags. Use GitHub UI to create a release, which will create a tag under the hood, or you can use the Git CLI:
+
+'''
+git tag -a "v0.0.1" -m "First release"
+git push --follow-tags
+
+'''
 
 
 #### License
