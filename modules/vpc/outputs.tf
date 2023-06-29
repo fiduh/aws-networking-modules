@@ -1,5 +1,5 @@
 output "aws_subnet_public" {
-  value = values(aws_subnet.public)[*].id
+  value       = values(aws_subnet.public)[*].id
   description = "list of aws public subnets"
 }
 

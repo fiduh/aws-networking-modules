@@ -1,10 +1,10 @@
 terraform {
-# Require Terraform Core at exactly version 1.5.1
+  # Require Terraform Core at exactly version 1.5.1
   required_version = "1.5.1"
   required_providers {
     aws = {
-        source  = "hashicorp/aws"
-        version = "~> 5.0"
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
     }
   }
 }
@@ -17,7 +17,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     Environment = var.environment
   }
 
-# Prevent accidental deletion of this S3 bucket
+  # Prevent accidental deletion of this S3 bucket
   lifecycle {
     prevent_destroy = true
   }
@@ -35,7 +35,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "AES256"
+      sse_algorithm = "AES256"
     }
   }
 }
