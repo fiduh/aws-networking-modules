@@ -8,14 +8,15 @@ This repo contains modules for creating production-grade VPC and other related c
 
 
 
-## Supporting Modules
+### Supporting Modules
+---
 There are several supporting modules that add extra functionality on top of the Main Module:
 
-* VPC-Peering: By default, VPCs are completely isolated from each other, but sometimes, you want to allow them to communicate, such as allowing the apps in a  VPC housing public-facing applications to communicate with the database VPC. This module creates peering connections and route table entries that allow private communication between VPCs
-* VPN client: This module enables remote secure access to resources on the VPCs
-* VPC-Flow-Logs: Create VPC flow logs to log network traffic in VPCs, subnets, and Elastic Network Interfaces.
+* **VPC-Peering** : By default, VPCs are completely isolated from each other, but sometimes, you want to allow them to communicate, such as allowing the apps in a  VPC housing public-facing applications to communicate with the database VPC. This module creates peering connections and route table entries that allow private communication between VPCs
+* **VPN client**: This module enables remote secure access to resources on the VPCs
+* **VPC-Flow-Logs**: Create VPC flow logs to log network traffic in VPCs, subnets, and Elastic Network Interfaces.
 
-Click on each module above to see its documentation. Head over to the example folder for example implementations.
+Click on each module above to see its documentation. *Head over to the example folder, for example implementations*.
 
 #### What is a module?
 
@@ -49,7 +50,7 @@ module "vpc" {
 
 ```
 
-Note: the double slash (//) is intentional and required. it's part of Terraform's Git syntax. See the module's documentation and variable.tf file for all the parameters you can set. Run ` terraform get -update` to pull the latest version of this module from this repo before running the standard ` terraform plan ` and ` terraform apply ` commands.
+Note: *the double slash (//) is intentional and required* . it's part of Terraform's Git syntax. See the module's documentation and variable.tf file for all the parameters you can set. Run ` terraform get -update` to pull the latest version of this module from this repo before running the standard ` terraform plan ` and ` terraform apply ` commands.
 
 #### What's a VPC?
 
