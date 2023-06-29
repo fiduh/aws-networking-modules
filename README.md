@@ -1,29 +1,27 @@
 Terraform module which creates VPC resources on AWS
 
-This repo contains modules for creating production grade VPC and other related components on AWS
+This repo contains modules for creating production-grade VPC and other related components on AWS
 
-#### Main Modules
-The Two main modules are:
+## Main Module
 
-* vpc-app: Launch a vpc meant to house public facing and stateless applications. The VPC includes 2 tiers of subnets (public, private), internet gateway, routing rules, network access control list, security groups, NAT gateways.
-
-* vpc-datastores: Launch a vpc meant to house persistent data. the VPC includes a single tier of private subnet, across multiple avaliability zones, routing rules, network ACLs, security groups.
+* VPC: Customizable, versioned, and immutable VPC meant to house public-facing and stateless applications or persistent data. The VPC includes Subnets (public, private), Internet gateway (IGW), Route Tables and routing rules, Network Access Control List (NACL), Security Groups, NAT Gateways.
 
 
-## Supporting Modules
-There are several supporting modules that add extra functionality on top of vpc-microservices and vpc-datastores:
 
-* vpc-peering: By default VPCs are completely isolated from each other, but sometimes, you want to allow them communicate, such as allowing the apps in the microservices vpc communicate with the database vpc. This module creates peering connections and route table entries that allows private communication between vpcs
-* vpn client: This modules enables remote secure access to resouces on the vpcs
-* vpc-flow-logs: Create VPC flow logs to log network traffic in VPCs, subnets, and Elastic Network Interfaces.
+### Supporting Modules
+There are several supporting modules that add extra functionality on top of the Main Module:
 
-Click on each module above to see its documentation. Head over to the example folder for example implemtations.
+* VPC-Peering: By default, VPCs are completely isolated from each other, but sometimes, you want to allow them to communicate, such as allowing the apps in a  VPC housing public-facing applications to communicate with the database VPC. This module creates peering connections and route table entries that allow private communication between VPCs
+* VPN client: This module enables remote secure access to resources on the VPCs
+* VPC-Flow-Logs: Create VPC flow logs to log network traffic in VPCs, subnets, and Elastic Network Interfaces.
+
+Click on each module above to see its documentation. Head over to the example folder for example implementations.
 
 #### What is a module?
-Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster or an Auto Scaling Group defined as reusable code. Modules are versioned using Semantic Versioning to allow users access the latest infrastructure best practices in a systematic way.
+Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster, or an Auto Scaling Group defined as reusable code. Modules are versioned using Semantic Versioning to allow users access to the latest infrastructure best practices in a systematic way.
 
 #### Using a Terraform Module
-To use a module in your Terraform templates, create a module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backwards incompatible changes. For example, to use <code>v1.0.8</code> of the vpc module, you would add the following:
+To use a module in your Terraform templates, create module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backward incompatible changes. For example, to use <code>v1.0.8</code> of the VPC module, you would add the following:
 
 ```
 
@@ -40,7 +38,7 @@ module "vpc" {
 
 ```
 
-Note: the double slash (//) is intentional and required. it's part of Terraform's Git syntax. See the module's documentation and vars.tf file for all the parameters you can set. Run ` terraform get -update` to pull the latest version of this module from this repo before running the standard terraform plan and terraform apply commands.
+Note: the double slash (//) is intentional and required. it's part of Terraform's Git syntax. See the module's documentation and variable.tf file for all the parameters you can set. Run ` terraform get -update` to pull the latest version of this module from this repo before running the standard ` terraform plan ` and ` terraform apply ` commands.
 
 #### What's a VPC?
 
