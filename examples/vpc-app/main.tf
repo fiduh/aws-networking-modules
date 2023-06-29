@@ -24,20 +24,15 @@ module "vpc-app-mgmt-datastore" {
   vpc_name = "microservice-vpc"
   vpc_cidr_block = "10.0.0.0/21"
 
-
   public_subnets_cidr_with_azs = {
     "us-east-1a" = "10.0.0.0/24"
     "us-east-1b" = "10.0.1.0/24"
   }
 
-
-
-
   private_subnets_cidr_with_azs = {
     "us-east-1a" = "10.0.2.0/24"
     "us-east-1b" = "10.0.3.0/24"
   }
-
 
   #enable_single_nat = true
   one_nat_gateway_per_az = true
