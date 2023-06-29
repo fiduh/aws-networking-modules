@@ -72,8 +72,8 @@ Because VPC is Private, only [Private IPv4 Network Ranges RFC1918](https://datat
 When in doubt use [IP address Guide](www.ipaddressguide.com/cidr) to calculate the number of IP addresses in your CIDR
 Max CIDR per VPC 5, for each CIDR
 ```
- * Min. size is /28 (16 IP addresses)
- * Max. size is /16 (65536 IP addresses)
+  Min. size is /28 (16 IP addresses)
+  Max. size is /16 (65536 IP addresses)
 ```
 Two private VPCs can communicate with each other using VPC Peering
 
