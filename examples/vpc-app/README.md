@@ -9,6 +9,13 @@
   
 * VPN Client: This enables remote secure access to resources on the VPCs
 
+To run this example you need to execute:
+```
+terraform init
+terraform plan
+terraform apply
+```
+Note: this example may create resources which can cost money (AWS Elastic IP, for example). Run terraform destroy when you don't need these resources or you can disable them.
 
 ## Usage
 
