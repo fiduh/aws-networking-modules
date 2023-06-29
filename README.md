@@ -8,7 +8,7 @@ This repo contains modules for creating production-grade VPC and other related c
 
 
 
-### Supporting Modules
+## Supporting Modules
 There are several supporting modules that add extra functionality on top of the Main Module:
 
 * VPC-Peering: By default, VPCs are completely isolated from each other, but sometimes, you want to allow them to communicate, such as allowing the apps in a  VPC housing public-facing applications to communicate with the database VPC. This module creates peering connections and route table entries that allow private communication between VPCs
@@ -18,7 +18,8 @@ There are several supporting modules that add extra functionality on top of the 
 Click on each module above to see its documentation. Head over to the example folder for example implementations.
 
 #### What is a module?
-Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster, or an Auto Scaling Group defined as reusable code. Modules are versioned using Semantic Versioning to allow users access to the latest infrastructure best practices in a systematic way.
+
+Best-practices implementation of a piece of infrastructure, such as a VPC, EKS Cluster, or an Auto Scaling Group defined as reusable, customizable, immutable, and versioned code. Modules are versioned using Semantic Versioning to allow users access to the latest infrastructure best practices in a systematic way.
 
 #### Using a Terraform Module
 To use a module in your Terraform templates, create module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backward incompatible changes. For example, to use <code>v1.0.8</code> of the VPC module, you would add the following:
@@ -28,13 +29,23 @@ To use a module in your Terraform templates, create module resources and set its
 module "vpc" {
   source = "git::git@github.com:/osemiduh/aws-networking-modules/modules/vpc-microservices?ref=v1.0.8"
   name = "vpc-app"
-  cidr = 10.0.0.0/21
-  // set the parameters for the vpc-microservices module
+  vpc_cidr_block = "10.0.0.0/21"
+
+  public_subnets_cidr_with_azs = {
+  "us-east-1a" = "10.0.0.0/24"
+  "us-east-1b" = "10.0.1.0/24"
+  }
+
+  private_subnets_cidr_with_azs = {
+  "us-east-1a" = "10.0.2.0/24"
+  "us-east-1b" = "10.0.3.0/24"
+  }
   
+  enable_single_nat = true
 
   tags = {
     ManagedBy : "Terraform" 
-} 
+  } 
 
 ```
 
