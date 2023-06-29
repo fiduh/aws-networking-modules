@@ -55,17 +55,33 @@ Note: the double slash (//) is intentional and required. it's part of Terraform'
 
 AWS VPC
 
-VPC is your logically isolated virtual network on Amazon’s public cloud, where you can deploy your own resources. It spans an entire region, made up of several Availability Zones. You can further divide your network into multiple smaller networks called subnets, where you can create AWS resources, such as EC2 instances.
+VPC is your logically isolated virtual network on Amazon’s public cloud, where you can deploy your own resources. It spans a single region (Max. 5 VPCs per region - soft limit), made up of several Availability Zones. You can further divide your network into multiple smaller networks called subnets (Max. 200 subnets per VPC - soft limit), where you can create AWS resources, such as EC2 instances.
 
-To allow communication between resources in your VPC and the internet, you need an internet gateway attached to the VPC, route tables directing local traffic to the IGW has to be associated with the subnets that needs access to the internet
+To allow communication between resources in your VPC and the internet, you need an internet gateway attached to the VPC, route tables directing local traffic to the IGW have to be associated with the subnets that need access to the internet
 
-To secure this network, NACLs determine which traffic is allowed in and out of your subnets, Security groups control which traffic are allowed to reach the resources you deployed in your network
+To secure this network, NACLs determine which traffic is allowed in and out of your subnets, Security groups control which traffic is allowed to reach the resources you deployed in your network
+
+Because VPC is Private, only [Private IPv4 Network Ranges RFC1918](https://datatracker.ietf.org/doc/html/rfc1918) of Internet Engineering Task Force (IETF) are allowed as VPC CIDRs.
+```
+10.0.0.0 - 10.255.255.255 (10.0.0.0/8)
+172.16.0.0 - 172.31.255.255 (172.16.0.0/12)
+192.168.0.0 - 192.168.255.255 (192.168.0.0/16)
+
+```
+
+When in doubt use [IP address Guide](www.ipaddressguide.com/cidr) to calculate the number of IP addresses in your CIDR
+Max CIDR per VPC 5, for each CIDR
+```
+ * Min. size is /28 (16 IP addresses)
+ * Max. size is /16 (65536 IP addresses)
+```
+Two private VPCs can communicate with each other using VPC Peering
 
 ### Developing a module
 
 #### Versioning
 We are following the principles of [Semantic Versioning](https://semver.org/). During initial development, the major version is 0 (e.g., `0.x.y`), which indicates the code does not yet have a stable API. Once we hit `1.0.0` we follow these rules:
-1. Increment the patch version for backwards-compatible bug fix (e.g., `v1.0.8 -> v1.0.9`).
+1. Increment the patch version for backwards-compatible bug fixes (e.g., `v1.0.8 -> v1.0.9`).
 2. Increment the minor version for new features that are backwards-compatible (e.g.,`v1.0.8 -> 1.1.0`).
 3. Increment the major version for any backwards-incompatible changes (e.g.`1.0.8 -> 2.0.0`).
 
