@@ -135,7 +135,7 @@ resource "aws_route" "nat_single_route" {
   count                  = var.enable_single_nat ? 1 : 0
   route_table_id         = aws_route_table.rt_for_single_nat[0].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.example[0].id
+  nat_gateway_id         = aws_nat_gateway.single_nat[0].id
   depends_on             = [aws_route_table.rt_for_single_nat]
 }
 
@@ -167,7 +167,7 @@ resource "aws_internet_gateway" "igw" {
 ################################################################################
 
 
-resource "aws_nat_gateway" "example" {
+resource "aws_nat_gateway" "single_nat" {
   count = var.enable_single_nat ? 1 : 0
 
   allocation_id = aws_eip.nat[0].id
