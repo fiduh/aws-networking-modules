@@ -1,3 +1,8 @@
+locals {
+  public_subnets_ids  = values(aws_subnet.public)[*].id
+  private_subnets_ids = values(aws_subnet.private)[*].id
+}
+
 terraform {
   # Require Terraform Core at exactly version 1.5.1
   required_version = "1.5.1"
@@ -34,20 +39,18 @@ resource "aws_subnet" "public" {
   }
 }
 
-locals {
-  public_subnets_ids  = values(aws_subnet.public)[*].id
-  private_subnets_ids = values(aws_subnet.private)[*].id
-}
 
+# Public Route Table
 resource "aws_route_table" "public" {
+  # Create this public route table, only if public subnets are created
   count  = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "example"
+    Name = "Public-rt"
   }
 }
 
-
+# Public Route Table Subnet association
 resource "aws_route_table_association" "public" {
   count          = length(local.public_subnets_ids)
   subnet_id      = local.public_subnets_ids[count.index]
@@ -56,6 +59,7 @@ resource "aws_route_table_association" "public" {
   depends_on = [aws_subnet.public]
 }
 
+# Public Route Table Route entries
 resource "aws_route" "public_igw_rt_entry" {
   count                  = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
   route_table_id         = aws_route_table.public[0].id
@@ -79,11 +83,12 @@ resource "aws_subnet" "private" {
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "Main"
+    Name = "Private-${each.key}"
   }
 }
 
 
+# Private Route Tables for NATs per AZs
 resource "aws_route_table" "rt_for_nat_per_az" {
   for_each = var.one_nat_gateway_per_az ? var.private_subnets_cidr_with_azs : {}
   vpc_id   = aws_vpc.vpc.id
@@ -92,7 +97,7 @@ resource "aws_route_table" "rt_for_nat_per_az" {
   }
 }
 
-
+# Private Route Tables Subnet association for NATs per AZs
 resource "aws_route_table_association" "rt_per_private_subnet" {
   for_each       = var.one_nat_gateway_per_az ? var.private_subnets_cidr_with_azs : {}
   subnet_id      = aws_subnet.private[each.key].id
@@ -107,6 +112,7 @@ locals {
   nat_rt_ids = values(aws_route_table.rt_for_nat_per_az)[*].id
 }
 
+# Private Route Table Route entries for NATs per AZs
 resource "aws_route" "private_rt_nat_entry_per_az" {
   count                  = var.one_nat_gateway_per_az ? length(var.private_subnets_cidr_with_azs) : 0
   route_table_id         = local.nat_rt_ids[count.index]
