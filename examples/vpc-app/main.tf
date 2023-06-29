@@ -13,7 +13,7 @@ provider "aws" {
 
 module "vpc-app-mgmt-datastore" {
   source = "../../modules/vpc"
-
+  vpc_name = "microservice-vpc"
   vpc_cidr_block = "10.0.0.0/21"
 
 
