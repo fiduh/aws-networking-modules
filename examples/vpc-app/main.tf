@@ -34,7 +34,16 @@ module "vpc-app-mgmt-datastore" {
     "us-east-1b" = "10.0.3.0/24"
   }
 
-  #enable_single_nat = true
-  one_nat_gateway_per_az = true
+  enable_single_nat = true
+  #one_nat_gateway_per_az = true
 }
 
+/*
+resource "aws_route" "private_route" {
+  route_table_id            = module.vpc-app-mgmt-datastore.private_route_table_id.id
+  destination_cidr_block    = "0.0.0.0/1"
+  nat_gateway_id = module.vpc-app-mgmt-datastore.nat_gatway_id
+  depends_on                = [module.vpc-app-mgmt-datastore.private_route_table_id]
+}
+
+*/
