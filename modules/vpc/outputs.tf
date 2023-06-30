@@ -1,16 +1,6 @@
-output "aws_subnet_public" {
-  value       = values(aws_subnet.public)[*].id
-  description = "list of aws public subnets"
+
+output "public_route_table_id" {
+  value = aws_route_table.public[0].id
+  description = "AWS Route Table ID, to enable aditional routes to be added externally"
 }
 
-output "public_subnets_ids" {
-  value = local.public_subnets_ids
-}
-
-
-/*
-output "private_subnets_ids" {
-  value = local.private_subnets_ids
-}
-
-*/
