@@ -37,3 +37,4 @@ module "vpc-app-mgmt-datastore" {
   #enable_single_nat = true
   one_nat_gateway_per_az = true
 }
+
