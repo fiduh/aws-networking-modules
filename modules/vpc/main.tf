@@ -87,6 +87,7 @@ resource "aws_subnet" "private" {
   }
 }
 
+/*
 # Private Route Tables
 resource "aws_route_table" "private_rt" {
   count = length(var.private_subnets_cidr_with_azs) != 0 ? 1 : 0
@@ -95,12 +96,14 @@ resource "aws_route_table" "private_rt" {
     Name = "private-route-table"
   }
 }
+# Private Route Table Subnets association
 resource "aws_route_table_association" "private_rt_per_subnet" {
   count = length(var.private_subnets_cidr_with_azs)
   subnet_id      = local.private_subnets_ids[count.index]
   route_table_id = aws_route_table.private_rt[0].id
 }
-# Private Route Table Subnets association
+
+*/
 
 # Private Route Tables for NATs per AZs
 resource "aws_route_table" "rt_for_nat_per_az" {
@@ -110,6 +113,8 @@ resource "aws_route_table" "rt_for_nat_per_az" {
     Name = "private-rt-${each.key}"
   }
 }
+
+
 
 # Private Route Tables Subnet association for NATs per AZs
 resource "aws_route_table_association" "rt_per_private_subnet" {
