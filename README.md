@@ -28,8 +28,8 @@ To use a module in your Terraform templates, create module resources and set its
 ```
 
 module "vpc" {
-  source = "git::git@github.com:/osemiduh/aws-networking-modules/modules/vpc-microservices?ref=v1.0.8"
-  name = "vpc-app"
+  source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
+  name = "microservices-vpc"
   vpc_cidr_block = "10.0.0.0/21"
 
   public_subnets_cidr_with_azs = {
@@ -43,6 +43,7 @@ module "vpc" {
   }
   
   enable_single_nat = true
+  one_nat_gateway_per_az = true
 
   tags = {
     ManagedBy : "Terraform" 
