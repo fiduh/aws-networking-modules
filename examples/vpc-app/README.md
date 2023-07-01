@@ -8,41 +8,50 @@
 * VPC Peering: By default, VPCs are completely isolated from each other, this allows communication between VPC-Microservices and VPC-Datastores
   
 * VPN Client: This enables remote secure access to resources on the VPCs
+* 
 ## Prerequisites 
 To manage your terraform state remotely and securely:
-First setup an S3 bucket and DynamoDB table - refer to the example/global/terraform_remote_state folder.
+First set up an S3 bucket and DynamoDB table - refer to the example/global/terraform_remote_state folder.
 Configure terraform backend to use the S3 bucket to store your .tfstate file and use DynamoDB table for State locking.
 
 Get the S3 and DynamoDB outputs data into your VPC module, using the terraform remote state data source 
 
 ```
-data "aws_terraform_remotestate" {
+data "terraform_remote_state" "s3" {
+  backend = "s3"
 
+  config = {
+    bucket = var.db_remote_state_bucket
+    key    = var.db_remote_state_key
+    region = "us-east-1"
+  }
 }
 
 ```
 
-Set up your backend key in such a way, your S3 statefile matches your file layout isolation
-
-## Quick Start
-Your development environment or CI/CD Server should have terraform > 1.0.0 installed
+Set up your backend key in such a way, your S3 state file matches your file layout isolation
 
 Configure terraform version and terraform aws provider version
 
 ```
+
 terraform {
-
-required_provider 
+  backend "s3" {
+    bucket         = "S3-bucket-name"
+    key            = "examples/vpc-app/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "dynamodb-table-name"
+    encrypt        = true
+  }
 }
+
 ```
 
-To run this example you need to execute:
-```
-terraform init
-terraform plan
-terraform apply
-```
-Note: this example may create resources which can cost money (AWS Elastic IP, for example). Run terraform destroy when you don't need these resources or you can disable them.
+## Quick Start
+Your development environment or CI/CD Server should have Terraform > 1.0.0 installed
+
+
+
 ## Usage
 
 
@@ -63,12 +72,22 @@ module "vpc" {
   }
   
   enable_single_nat = true
+  one_nat_gateway_per_az = false
 
   tags = {
     ManagedBy : "Terraform" 
   }
 
 ```
+
+To run this example you need to execute:
+```
+terraform init
+terraform plan
+terraform apply
+```
+Note: this example may create resources that can cost money (AWS Elastic IP, for example). Run terraform destroy when you don't need these resources or you can disable them.
+
 
 ## NAT Gateway Scenarios
 This example implementation supports two scenarios for creating NAT gateways
