@@ -1,7 +1,7 @@
 ## Basic Microservices Application Network Topology. This architecture consists of:
 
 
-* VPC-Microservices: Launch a VPC meant to house public-facing and stateless applications. The VPC includes 2 tiers of subnets (Public, Private), Internet Gateway, Route Table, Network Access Control List, security groups, NAT gateways.
+* VPC-Microservices: Launch a VPC meant to house public-facing and stateless applications. The VPC includes 2 tiers of subnets (Public, Private), Internet Gateway, Route Tables, Network Access Control List, Security Groups, NAT gateways.
 
 * VPC-Datastores: Launch a VPC meant to house persistent data. the VPC includes a single tier of Private subnet, across multiple availability zones, routing rules, network ACLs, Security Groups.
   
