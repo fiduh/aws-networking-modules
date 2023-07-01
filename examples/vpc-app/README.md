@@ -1,4 +1,4 @@
-## Basic Microservice Network Topology consists of:
+## Basic Microservices Application Network Topology. This architecture consists of:
 
 
 * VPC-Microservices: Launch a VPC meant to house public-facing and stateless applications. The VPC includes 2 tiers of subnets (Public, Private), Internet Gateway, Route Table, Network Access Control List, security groups, NAT gateways.
@@ -8,6 +8,33 @@
 * VPC Peering: By default, VPCs are completely isolated from each other, this allows communication between VPC-Microservices and VPC-Datastores
   
 * VPN Client: This enables remote secure access to resources on the VPCs
+## Prerequisites 
+To manage your terraform state remotely and securely:
+First setup an S3 bucket and DynamoDB table - refer to the example/global/terraform_remote_state folder.
+Configure terraform backend to use the S3 bucket to store your .tfstate file and use DynamoDB table for State locking.
+
+Get the S3 and DynamoDB outputs data into your VPC module, using the terraform remote state data source 
+
+```
+data "aws_terraform_remotestate" {
+
+}
+
+```
+
+Set up your backend key in such a way, your S3 statefile matches your file layout isolation
+
+## Quick Start
+Your development environment or CI/CD Server should have terraform > 1.0.0 installed
+
+Configure terraform version and terraform aws provider version
+
+```
+terraform {
+
+required_provider 
+}
+```
 
 To run this example you need to execute:
 ```
@@ -16,8 +43,8 @@ terraform plan
 terraform apply
 ```
 Note: this example may create resources which can cost money (AWS Elastic IP, for example). Run terraform destroy when you don't need these resources or you can disable them.
-
 ## Usage
+
 
 ```
 module "vpc" {
