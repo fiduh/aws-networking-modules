@@ -53,6 +53,18 @@ module "vpc" {
 
 Note: *the double slash (//) is intentional and required*. it's part of Terraform's Git syntax. See the module's documentation and variable.tf file for all the parameters you can set. Run ` terraform get -update` to pull the latest version of this module from this repo before running the standard ` terraform plan ` and ` terraform apply ` commands.
 
+## NAT Gateway Scenarios
+This module supports two scenarios for creating NAT gateways.
+### Single NAT Gateway
+If `enable_single_nat = true`, then all private subnets will route their Internet traffic through this single NAT gateway. The NAT gateway will be placed in the first public subnet in your public_subnets block.
+   `enable_single_nat = true`
+  `one_nat_gateway_per_az = false`
+
+## One NAT Gateway per availability zone (if enabled)
+If `one_nat_gateway_per_az = true` and `enable_single_nat = false`, then the module will place one NAT gateway in each availability zone you specify in public_subnets_cidr_with_azs.
+   `one_nat_gateway_per_az = true`
+   `enable_single_nat = false`
+
 #### What's a VPC?
 
 AWS VPC is your logically isolated virtual network on Amazon’s public cloud, where you can deploy your own resources. It spans a single region (Max. 5 VPCs per region - soft limit), made up of several Availability Zones. You can further divide your network into multiple smaller networks called subnets (Max. 200 subnets per VPC - soft limit), where you can create AWS resources, such as EC2 instances.
