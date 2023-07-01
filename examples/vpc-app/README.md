@@ -14,24 +14,8 @@ To manage your terraform state remotely and securely:
 First set up an S3 bucket and DynamoDB table - refer to the example/global/terraform_remote_state folder.
 Configure terraform backend to use the S3 bucket to store your .tfstate file and use DynamoDB table for State locking.
 
-Get the S3 and DynamoDB outputs data into your VPC module, using the terraform remote state data source 
+Make sure your backend key is the same as the folder path `examples/vpc-app/terraform.tfstate`, this gives you a 1:1 mapping between the layout of your terraform code in version control and your Terraform state files in S3. 
 
-```
-data "terraform_remote_state" "s3" {
-  backend = "s3"
-
-  config = {
-    bucket = var.db_remote_state_bucket
-    key    = var.db_remote_state_key
-    region = "us-east-1"
-  }
-}
-
-```
-
-Set up your backend key in such a way, your S3 state file matches your file layout isolation
-
-Configure terraform version and terraform aws provider version
 
 ```
 
