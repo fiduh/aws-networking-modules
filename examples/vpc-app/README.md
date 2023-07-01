@@ -41,7 +41,7 @@ Your development environment or CI/CD Server should have Terraform > 1.0.0 insta
 
 ```
 module "vpc" {
-  source = "git::git@github.com:/osemiduh/aws-networking-modules/modules/vpc-microservices?ref=v1.0.8"
+  source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
   name = "vpc-app"
   vpc_cidr_block = "10.0.0.0/21"
 
