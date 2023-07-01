@@ -72,11 +72,3 @@ terraform apply
 ```
 Note: this example may create resources that can cost money (AWS Elastic IP, for example). Run terraform destroy when you don't need these resources or you can disable them.
 
-
-## NAT Gateway Scenarios
-This example implementation supports two scenarios for creating NAT gateways
-* Single NAT Gateway
-   `enable_single_nat = true`
-
-* One NAT Gateway per availability zone (if enabled)
-   `one_nat_gateway_per_az = true`
