@@ -55,9 +55,7 @@ Note: *the double slash (//) is intentional and required*. it's part of Terrafor
 
 #### What's a VPC?
 
-AWS VPC
-
-VPC is your logically isolated virtual network on Amazon’s public cloud, where you can deploy your own resources. It spans a single region (Max. 5 VPCs per region - soft limit), made up of several Availability Zones. You can further divide your network into multiple smaller networks called subnets (Max. 200 subnets per VPC - soft limit), where you can create AWS resources, such as EC2 instances.
+AWS VPC is your logically isolated virtual network on Amazon’s public cloud, where you can deploy your own resources. It spans a single region (Max. 5 VPCs per region - soft limit), made up of several Availability Zones. You can further divide your network into multiple smaller networks called subnets (Max. 200 subnets per VPC - soft limit), where you can create AWS resources, such as EC2 instances.
 
 To allow communication between resources in your VPC and the internet, you need an internet gateway attached to the VPC, route table containing routes directing local traffic to the IGW has to be associated with the subnets that need access to the internet
 
