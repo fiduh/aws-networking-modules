@@ -20,7 +20,7 @@ provider "aws" {
 }
 
 module "vpc-app-mgmt-datastore" {
-  source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
+  source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.1"
   vpc_name = "microservice-vpc"
   vpc_cidr_block = "10.0.0.0/21"
 
@@ -34,8 +34,8 @@ module "vpc-app-mgmt-datastore" {
     "us-east-1b" = "10.0.3.0/24"
   }
 
-  enable_single_nat = true
-  one_nat_gateway_per_az = false
+  enable_single_nat = false
+  one_nat_gateway_per_az = true
 }
 
 /*
