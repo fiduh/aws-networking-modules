@@ -60,8 +60,8 @@ If `enable_single_nat = true`, then all private subnets will route their Interne
    `enable_single_nat = true`
   `one_nat_gateway_per_az = false`
 
-## One NAT Gateway per availability zone (if enabled)
-If `one_nat_gateway_per_az = true` and `enable_single_nat = false`, then the module will place one NAT gateway in each availability zone you specify in public_subnets_cidr_with_azs.
+## One NAT Gateway per Public Subnet per Availability Zone (if enabled)
+If `one_nat_gateway_per_az = true` and `enable_single_nat = false`, then the module will place one NAT gateway in each Public Subnet per Availability Zone you specify in public_subnets_cidr_with_azs.
    `one_nat_gateway_per_az = true`
    `enable_single_nat = false`
 
