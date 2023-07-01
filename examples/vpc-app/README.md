@@ -1,14 +1,14 @@
 ## Basic Microservices Application Network Topology. This architecture consists of:
 
 
-* VPC-Microservices: Launch a VPC meant to house public-facing and stateless applications. The VPC includes 2 tiers of subnets (Public, Private), Internet Gateway, Route Tables, Network Access Control List, Security Groups, NAT gateways.
+* Microservices VPC: Launch a VPC meant to house public-facing and stateless applications. The VPC includes 2 tiers of subnets (Public, Private), Internet Gateway, Route Tables, Network Access Control List, Security Groups, NAT Gateways.
 
-* VPC-Datastores: Launch a VPC meant to house persistent data. the VPC includes a single tier of Private subnet, across multiple availability zones, routing rules, network ACLs, Security Groups.
+* Datastores VPC: Launch a VPC meant to house persistent data. the VPC includes a single tier of Private subnet, across multiple availability zones, Route Tables, Network ACLs, and Security Groups.
   
-* VPC Peering: By default, VPCs are completely isolated from each other, this allows communication between VPC-Microservices and VPC-Datastores
+* VPC Peering: By default, VPCs are completely isolated from each other, this allows communication between Microservices VPC and Datastores VPC
   
 * VPN Client: This enables remote secure access to resources on the VPCs
-* 
+  
 ## Prerequisites 
 To manage your terraform state remotely and securely:
 First set up an S3 bucket and DynamoDB table - refer to the example/global/terraform_remote_state folder.
