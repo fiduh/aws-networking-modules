@@ -75,11 +75,46 @@ resource "aws_network_acl" "public_nacl" {
   count = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "Public NACL"
+    Name = "Public NACL-traffic"
   }
 }
 
+# Public subnet NACL Association
+resource "aws_network_acl_association" "public_nacl_association" {
+  count = length(var.public_subnets_cidr_with_azs) != 0 ? length(local.public_subnets_ids) : 0
+  network_acl_id = aws_network_acl.public_nacl[0].id
+  subnet_id      = local.public_subnets_ids[count.index]
+}
 
+# Public NACL inbound entry rules
+
+resource "aws_network_acl_rule" "public_nacl_inbound" {
+  count = length(var.public_subnets_cidr_with_azs) != 0 ? length(var.public_inbound_acl_rules) : 0
+  network_acl_id = aws_network_acl.public_nacl[0].id
+
+  rule_number    = var.public_inbound_acl_rules[count.index]["rule_number"]
+  egress         = false
+  protocol       = var.public_inbound_acl_rules[count.index]["protocol"]
+  rule_action    = var.public_inbound_acl_rules[count.index]["rule_action"]
+  cidr_block     = lookup(var.public_inbound_acl_rules[count.index], "cidr_block", null)
+  from_port      = lookup(var.public_inbound_acl_rules[count.index], "from_port", null)
+  to_port        = lookup(var.public_inbound_acl_rules[count.index], "to_port", null)
+}
+
+
+# Public NACL outbound entry rules
+resource "aws_network_acl_rule" "public_nacl_outbound" {
+  count = length(var.public_subnets_cidr_with_azs) != 0 ? length(var.public_outbound_acl_rules) : 0
+  network_acl_id = aws_network_acl.public_nacl[0].id
+
+  rule_number    = var.public_outbound_acl_rules[count.index]["rule_number"]
+  egress         = true
+  protocol       = var.public_outbound_acl_rules[count.index]["protocol"]
+  rule_action    = var.public_outbound_acl_rules[count.index]["rule_action"]
+  cidr_block     = lookup(var.public_outbound_acl_rules[count.index], "cidr_block", null)
+  from_port      = lookup(var.public_outbound_acl_rules[count.index], "from_port", null)
+  to_port        = lookup(var.public_outbound_acl_rules[count.index], "to_port", null)
+}
 ################################################################################
 # Private Subnets
 ################################################################################
@@ -160,6 +195,53 @@ resource "aws_route_table_association" "nat_single_subnet" {
   depends_on = [aws_subnet.private]
 }
 
+################################################################################
+# Private Network ACLs
+################################################################################
+resource "aws_network_acl" "private_nacl" {
+  count = length(var.private_subnets_cidr_with_azs) != 0 ? 1 : 0
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "Private NACL-traffic"
+  }
+}
+
+# Private subnet NACL Association
+resource "aws_network_acl_association" "private_nacl_association" {
+  count = length(var.private_subnets_cidr_with_azs) != 0 ? length(local.private_subnets_ids) : 0
+  network_acl_id = aws_network_acl.private_nacl[0].id
+  subnet_id      = local.private_subnets_ids[count.index]
+}
+
+# Private NACL inbound entry rules
+resource "aws_network_acl_rule" "private_inbound" {
+   count = length(var.private_subnets_cidr_with_azs) != 0 ? length(var.private_inbound_acl_rules) : 0
+
+  network_acl_id = aws_network_acl.private_nacl[0].id
+
+  egress          = false
+  rule_number     = var.private_inbound_acl_rules[count.index]["rule_number"]
+  rule_action     = var.private_inbound_acl_rules[count.index]["rule_action"]
+  from_port       = lookup(var.private_inbound_acl_rules[count.index], "from_port", null)
+  to_port         = lookup(var.private_inbound_acl_rules[count.index], "to_port", null)
+  protocol        = var.private_inbound_acl_rules[count.index]["protocol"]
+  cidr_block      = lookup(var.private_inbound_acl_rules[count.index], "cidr_block", null)
+}
+
+# Private NACL outbound entry rules
+resource "aws_network_acl_rule" "private_outbound" {
+  count = length(var.private_subnets_cidr_with_azs) != 0 ? length(var.private_inbound_acl_rules) : 0
+
+  network_acl_id = aws_network_acl.private_nacl[0].id
+
+  egress          = true
+  rule_number     = var.private_outbound_acl_rules[count.index]["rule_number"]
+  rule_action     = var.private_outbound_acl_rules[count.index]["rule_action"]
+  from_port       = lookup(var.private_outbound_acl_rules[count.index], "from_port", null)
+  to_port         = lookup(var.private_outbound_acl_rules[count.index], "to_port", null)
+  protocol        = var.private_outbound_acl_rules[count.index]["protocol"]
+  cidr_block      = lookup(var.private_outbound_acl_rules[count.index], "cidr_block", null)
+}
 
 
 ################################################################################
