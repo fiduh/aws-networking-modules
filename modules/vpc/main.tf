@@ -115,6 +115,22 @@ resource "aws_network_acl_rule" "public_nacl_outbound" {
   from_port      = lookup(var.public_outbound_acl_rules[count.index], "from_port", null)
   to_port        = lookup(var.public_outbound_acl_rules[count.index], "to_port", null)
 }
+
+
+################################################################################
+# Public Security Group
+################################################################################
+
+resource "aws_security_group" "public_sg" {
+  name        = "public-sg"
+  description = "Allow traffic into public subnets"
+  vpc_id      = aws_vpc.vpc.id
+  tags = {
+    Name = "public-sg"
+  }
+}
+
+
 ################################################################################
 # Private Subnets
 ################################################################################
@@ -241,6 +257,20 @@ resource "aws_network_acl_rule" "private_outbound" {
   to_port         = lookup(var.private_outbound_acl_rules[count.index], "to_port", null)
   protocol        = var.private_outbound_acl_rules[count.index]["protocol"]
   cidr_block      = lookup(var.private_outbound_acl_rules[count.index], "cidr_block", null)
+}
+
+
+################################################################################
+# Private Security Group
+################################################################################
+
+resource "aws_security_group" "private_sg" {
+  name        = "private-sg"
+  description = "Allow traffic into private subnets"
+  vpc_id      = aws_vpc.vpc.id
+  tags = {
+    Name = "private-sg"
+  }
 }
 
 
