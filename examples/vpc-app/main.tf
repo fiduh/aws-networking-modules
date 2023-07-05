@@ -11,18 +11,18 @@ provider "aws" {
   region = "us-east-1"
   default_tags {
     tags = {
-    ManagedBy = "Terraform"
-    Owner = "X-as-Code"
-    Environment =  "Staging"
+      ManagedBy   = "Terraform"
+      Owner       = "X-as-Code"
+      Environment = "Staging"
     }
-    
+
   }
 }
 
 module "vpc-app-mgmt-datastore" {
   # source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.2"
-  source = "../../modules/vpc"
-  vpc_name = "microservice-vpc"
+  source         = "../../modules/vpc"
+  vpc_name       = "microservice-vpc"
   vpc_cidr_block = "10.0.0.0/21"
 
   public_subnets_cidr_with_azs = {
@@ -35,7 +35,7 @@ module "vpc-app-mgmt-datastore" {
     "us-east-1b" = "10.0.3.0/24"
   }
 
-  enable_single_nat = false
+  enable_single_nat      = false
   one_nat_gateway_per_az = true
 }
 
