@@ -68,7 +68,16 @@ resource "aws_route" "public_igw_rt_entry" {
   depends_on             = [aws_route_table.public]
 }
 
-
+################################################################################
+# Public Network ACLs
+################################################################################
+resource "aws_network_acl" "public_nacl" {
+  count = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "Public NACL"
+  }
+}
 
 
 ################################################################################
@@ -87,25 +96,8 @@ resource "aws_subnet" "private" {
   }
 }
 
-/*
-# Private Route Tables
-resource "aws_route_table" "private_rt" {
-  count = length(var.private_subnets_cidr_with_azs) != 0 ? 1 : 0
-  vpc_id = aws_vpc.vpc.id
-  tags = {
-    Name = "private-route-table"
-  }
-}
-# Private Route Table Subnets association
-resource "aws_route_table_association" "private_rt_per_subnet" {
-  count = length(var.private_subnets_cidr_with_azs)
-  subnet_id      = local.private_subnets_ids[count.index]
-  route_table_id = aws_route_table.private_rt[0].id
-}
 
-*/
-
-# Private Route Tables for NATs per AZs
+# Private Route Tables for NATs per subnet on each AZ
 resource "aws_route_table" "rt_for_nat_per_az" {
   for_each = var.one_nat_gateway_per_az ? var.private_subnets_cidr_with_azs : {}
   vpc_id   = aws_vpc.vpc.id
