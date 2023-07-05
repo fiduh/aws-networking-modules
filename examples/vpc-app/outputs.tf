@@ -1,11 +1,10 @@
-/*
-output "private_route_table_id" {
-  value = module.vpc-app-mgmt-datastore.private_route_table_id
+
+output "private_sg" {
+  value = module.vpc-app-mgmt-datastore.private_sg
+  description = "Private security group id"
 }
 
-
-output "nat_gatway_id" {
-  value = module.vpc-app-mgmt-datastore.nat_gatway_id
+output "public_sg" {
+  value = module.vpc-app-mgmt-datastore.public_sg
+  description = "Private security group id"
 }
-
-*/
