@@ -147,69 +147,36 @@ resource "aws_subnet" "private" {
   }
 }
 
-
-# Private Route Tables for NATs per subnet on each AZ
-resource "aws_route_table" "rt_for_nat_per_az" {
-  for_each = var.one_nat_gateway_per_az ? var.private_subnets_cidr_with_azs : {}
+# There are as many routing tables as the number of NAT gateways
+locals {
+  private_rt_count = length(var.private_subnets_cidr_with_azs) != 0 ? var.enable_single_nat || var.one_nat_gateway_per_az ? local.nat_gateway_count: 1 : 0
+}
+resource "aws_route_table" "private-rt" {
+  count = local.private_rt_count
   vpc_id   = aws_vpc.vpc.id
   tags = {
-    Name = "private-rt-${each.key}"
+    Name = "private-rt"
   }
 }
 
-
-
-# Private Route Tables Subnet association for NATs per AZs
-resource "aws_route_table_association" "rt_per_private_subnet" {
-  for_each       = var.one_nat_gateway_per_az ? var.private_subnets_cidr_with_azs : {}
-  subnet_id      = aws_subnet.private[each.key].id
-  route_table_id = aws_route_table.rt_for_nat_per_az[each.key].id
-
-  depends_on = [aws_subnet.private]
-}
-
-
-
-locals {
-  nat_rt_ids = values(aws_route_table.rt_for_nat_per_az)[*].id
-}
-
-# Private Route Table Route entries for NATs per AZs
-resource "aws_route" "private_rt_nat_entry_per_az" {
-  count                  = var.one_nat_gateway_per_az ? length(var.private_subnets_cidr_with_azs) : 0
-  route_table_id         = local.nat_rt_ids[count.index]
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat_per_az[count.index].id
-  depends_on             = [aws_route_table.rt_for_nat_per_az]
-
-}
-
-# Private Route Table for single NAT 
-resource "aws_route_table" "rt_for_single_nat" {
-  count  = var.enable_single_nat ? 1 : 0
-  vpc_id = aws_vpc.vpc.id
-  tags = {
-    Name = "single-private-rt"
-  }
-}
-
-# Private Route Table Route entry for single NAT
-resource "aws_route" "nat_single_route" {
-  count                  = var.enable_single_nat ? 1 : 0
-  route_table_id         = aws_route_table.rt_for_single_nat[0].id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.single_nat[0].id
-  depends_on             = [aws_route_table.rt_for_single_nat]
-}
-
-# Private Route Table Subnets association for single NAT
-resource "aws_route_table_association" "nat_single_subnet" {
-  count          = var.enable_single_nat ? length(var.private_subnets_cidr_with_azs) : 0
+resource "aws_route_table_association" "private_rt_association" {
+  count = length(var.private_subnets_cidr_with_azs)
   subnet_id      = local.private_subnets_ids[count.index]
-  route_table_id = aws_route_table.rt_for_single_nat[0].id
+  route_table_id = var.one_nat_gateway_per_az ? aws_route_table.private-rt[count.index].id : aws_route_table.private-rt[0].id
 
   depends_on = [aws_subnet.private]
 }
+
+resource "aws_route" "private_rt_entry" {
+  count                  = var.enable_single_nat || var.one_nat_gateway_per_az ? local.private_rt_count : 0
+  route_table_id         = aws_route_table.private-rt[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = local.nat_gateway_ids[count.index]
+  depends_on             = [aws_route_table.private-rt]
+
+}
+
+
 
 ################################################################################
 # Private Network ACLs
@@ -290,7 +257,13 @@ resource "aws_internet_gateway" "igw" {
 ################################################################################
 # NAT Gateway
 ################################################################################
-
+ locals {
+   nat_gateway_count = var.enable_single_nat ? 1 : length(var.private_subnets_cidr_with_azs)
+   nat_gateway_ids = concat(
+    aws_nat_gateway.single_nat[*].id,
+    aws_nat_gateway.nat_per_az[*].id
+   )
+ }
 # Single NAT Gateway
 resource "aws_nat_gateway" "single_nat" {
   count = var.enable_single_nat ? 1 : 0
