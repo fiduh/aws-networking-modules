@@ -19,7 +19,7 @@ provider "aws" {
   }
 }
 
-module "vpc-app-mgmt-datastore" {
+module "microservices-vpc" {
   # source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.2"
   source         = "../../modules/vpc"
   vpc_name       = "microservice-vpc"
@@ -35,8 +35,8 @@ module "vpc-app-mgmt-datastore" {
     "us-east-1b" = "10.0.3.0/24"
   }
 
-  enable_single_nat      = false
-  one_nat_gateway_per_az = false
+  enable_single_nat      = true
+  one_nat_gateway_per_subnet = false
 }
 
 /*

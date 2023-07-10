@@ -149,7 +149,7 @@ resource "aws_subnet" "private" {
 
 # There are as many routing tables as the number of NAT gateways
 locals {
-  private_rt_count = length(var.private_subnets_cidr_with_azs) != 0 ? var.enable_single_nat || var.one_nat_gateway_per_az ? local.nat_gateway_count: 1 : 0
+  private_rt_count = length(var.private_subnets_cidr_with_azs) != 0 ? var.enable_single_nat || var.one_nat_gateway_per_subnet ? local.nat_gateway_count: 1 : 0
 }
 resource "aws_route_table" "private-rt" {
   count = local.private_rt_count
@@ -162,13 +162,13 @@ resource "aws_route_table" "private-rt" {
 resource "aws_route_table_association" "private_rt_association" {
   count = length(var.private_subnets_cidr_with_azs)
   subnet_id      = local.private_subnets_ids[count.index]
-  route_table_id = var.one_nat_gateway_per_az ? aws_route_table.private-rt[count.index].id : aws_route_table.private-rt[0].id
+  route_table_id = local.enable_nat_per_subnet ? aws_route_table.private-rt[count.index].id : aws_route_table.private-rt[0].id
 
   depends_on = [aws_subnet.private]
 }
 
 resource "aws_route" "private_rt_entry" {
-  count                  = var.enable_single_nat || var.one_nat_gateway_per_az ? local.private_rt_count : 0
+  count                  = var.enable_single_nat || var.one_nat_gateway_per_subnet ? local.private_rt_count : 0
   route_table_id         = aws_route_table.private-rt[count.index].id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = local.nat_gateway_ids[count.index]
@@ -249,7 +249,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = "main"
+    Name = "IGW"
   }
 }
 
@@ -261,8 +261,9 @@ resource "aws_internet_gateway" "igw" {
    nat_gateway_count = var.enable_single_nat ? 1 : length(var.private_subnets_cidr_with_azs)
    nat_gateway_ids = concat(
     aws_nat_gateway.single_nat[*].id,
-    aws_nat_gateway.nat_per_az[*].id
+    aws_nat_gateway.nat_per_subnet[*].id
    )
+  enable_nat_per_subnet = var.one_nat_gateway_per_subnet && var.enable_single_nat != true
  }
 # Single NAT Gateway
 resource "aws_nat_gateway" "single_nat" {
@@ -272,7 +273,7 @@ resource "aws_nat_gateway" "single_nat" {
   subnet_id     = local.public_subnets_ids[0]
 
   tags = {
-    Name = "gw NAT"
+    Name = "single NAT"
   }
 
   # To ensure proper ordering, it is recommended to add an explicit dependency
@@ -287,19 +288,19 @@ resource "aws_eip" "nat" {
 }
 
 # Elastic IPs for NAT Gateway Per AZs
-resource "aws_eip" "eip_nat_per_az" {
-  count  = var.one_nat_gateway_per_az ? length(var.public_subnets_cidr_with_azs) : 0
+resource "aws_eip" "eip_nat_per_subnet" {
+  count  = local.enable_nat_per_subnet ? length(var.public_subnets_cidr_with_azs) : 0
   domain = "vpc"
 }
 
 # NAT Gateways for each Public Subnet per AZ
-resource "aws_nat_gateway" "nat_per_az" {
-  count         = var.one_nat_gateway_per_az ? length(local.public_subnets_ids) : 0
-  allocation_id = aws_eip.eip_nat_per_az[count.index].id
+resource "aws_nat_gateway" "nat_per_subnet" {
+  count         = local.enable_nat_per_subnet ? length(local.public_subnets_ids) : 0
+  allocation_id = aws_eip.eip_nat_per_subnet[count.index].id
   subnet_id     = local.public_subnets_ids[count.index]
 
   tags = {
-    Name = "gw NAT"
+    Name = "NAT per subnet"
   }
 
   # To ensure proper ordering, it is recommended to add an explicit dependency

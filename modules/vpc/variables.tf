@@ -34,7 +34,7 @@ variable "enable_single_nat" {
   default     = false
 }
 
-variable "one_nat_gateway_per_az" {
+variable "one_nat_gateway_per_subnet" {
   type        = bool
   description = "Enable NAT in all AZs, This achieves fault tolerance"
   default     = false
