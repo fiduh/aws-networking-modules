@@ -36,7 +36,7 @@ module "vpc-app-mgmt-datastore" {
   }
 
   enable_single_nat      = false
-  one_nat_gateway_per_az = true
+  one_nat_gateway_per_az = false
 }
 
 /*
