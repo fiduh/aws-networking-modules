@@ -14,7 +14,25 @@ output "igw_arn" {
 ################################################################################
 # Publiс Subnets
 ################################################################################
+output "public_subnets" {
+  description = "List of IDs of public subnets"
+  value       = try(aws_subnet.public[*].id, null)
+}
 
+output "public_subnet_arns" {
+  description = "List of ARNs of public subnets"
+  value       = try(aws_subnet.public[*].arn)
+}
+
+output "public_route_table_ids" {
+  description = "List of IDs of public route tables"
+  value       = try(aws_route_table.public[*].id, null)
+}
+
+output "public_route_table_association_ids" {
+  description = "List of IDs of the private route table association"
+  value       = try(aws_route_table_association.public[*].id, null)
+}
 
 ################################################################################
 # Private Subnets

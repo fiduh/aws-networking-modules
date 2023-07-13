@@ -16,7 +16,25 @@ output "igw_arn" {
 # Publiс Subnets
 ################################################################################
 
+output "public_subnets" {
+  description = "List of IDs of public subnets"
+  value       = module.microservices-vpc.public_subnets
+}
 
+output "public_subnet_arns" {
+  description = "List of ARNs of public subnets"
+  value       = module.microservices-vpc.public_subnet_arns
+}
+
+output "public_route_table_ids" {
+  description = "List of IDs of public route tables"
+  value       = module.microservices-vpc.public_route_table_ids
+}
+
+output "public_route_table_association_ids" {
+  description = "List of IDs of the private route table association"
+  value       = module.microservices-vpc.public_route_table_association_ids
+}
 
 ################################################################################
 # Private Subnets

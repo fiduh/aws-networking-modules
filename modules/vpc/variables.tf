@@ -15,6 +15,27 @@ variable "vpc_instance_tenancy" {
   default     = "default"
 }
 
+# Availability zones
+variable "azs" {
+  description = "A list of availability zones"
+  type = list(string)
+  default = []
+}
+
+# Subnets
+
+variable "public_subnets" {
+  description = "A list of public subnets"
+  type = list(string)
+  default = []
+}
+
+variable "private_subnets" {
+  description = "A list of private subnets"
+  type = list(string)
+  default = []
+}
+
 
 variable "public_subnets_cidr_with_azs" {
   description = "A map of public subnets CIDRs with associated Aviability Zones inside the VPC"

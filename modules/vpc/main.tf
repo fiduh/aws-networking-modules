@@ -1,6 +1,8 @@
 locals {
-  public_subnets_ids  = values(aws_subnet.public)[*].id
-  private_subnets_ids = values(aws_subnet.private)[*].id
+  public_subnets_ids  = aws_subnet.public[*].id
+  private_subnets_ids = aws_subnet.private[*].id
+  create_public_subnets = length(var.azs) > 0 && length(var.public_subnets) > 0
+  create_private_subnets = length(var.azs) > 0 && length(var.private_subnets) > 0
 }
 
 terraform {
@@ -27,15 +29,15 @@ resource "aws_vpc" "vpc" {
 # Publiс Subnets
 ################################################################################
 resource "aws_subnet" "public" {
-  for_each   = var.public_subnets_cidr_with_azs
+  count = local.create_public_subnets ? length(var.azs) : 0
   vpc_id     = aws_vpc.vpc.id
-  cidr_block = each.value
+  cidr_block = var.public_subnets[count.index]
 
-  availability_zone       = each.key
+  availability_zone       = var.azs[count.index]
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "Public-${each.key}"
+    Name = "Public-${var.azs[count.index]}"
   }
 }
 
@@ -43,7 +45,7 @@ resource "aws_subnet" "public" {
 # Public Route Table
 resource "aws_route_table" "public" {
   # Create this public route table, only if public subnets are created
-  count  = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
+  count  = local.create_public_subnets ? 1 : 0
   vpc_id = aws_vpc.vpc.id
   tags = {
     Name = "Public-rt"
@@ -61,7 +63,7 @@ resource "aws_route_table_association" "public" {
 
 # Public Route Table Route entries
 resource "aws_route" "public_igw_rt_entry" {
-  count                  = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
+  count                  = local.create_public_subnets ? 1 : 0
   route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.igw[0].id
@@ -72,7 +74,7 @@ resource "aws_route" "public_igw_rt_entry" {
 # Public Network ACLs
 ################################################################################
 resource "aws_network_acl" "public_nacl" {
-  count = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
+  count = local.create_public_subnets ? 1 : 0
   vpc_id = aws_vpc.vpc.id
   tags = {
     Name = "Public NACL-traffic"
@@ -81,7 +83,7 @@ resource "aws_network_acl" "public_nacl" {
 
 # Public subnet NACL Association
 resource "aws_network_acl_association" "public_nacl_association" {
-  count = length(var.public_subnets_cidr_with_azs) != 0 ? length(local.public_subnets_ids) : 0
+  count = local.create_public_subnets ? length(local.public_subnets_ids) : 0
   network_acl_id = aws_network_acl.public_nacl[0].id
   subnet_id      = local.public_subnets_ids[count.index]
 }
@@ -89,7 +91,7 @@ resource "aws_network_acl_association" "public_nacl_association" {
 # Public NACL inbound entry rules
 
 resource "aws_network_acl_rule" "public_nacl_inbound" {
-  count = length(var.public_subnets_cidr_with_azs) != 0 ? length(var.public_inbound_acl_rules) : 0
+  count = local.create_public_subnets ? length(var.public_inbound_acl_rules) : 0
   network_acl_id = aws_network_acl.public_nacl[0].id
 
   rule_number    = var.public_inbound_acl_rules[count.index]["rule_number"]
@@ -104,7 +106,7 @@ resource "aws_network_acl_rule" "public_nacl_inbound" {
 
 # Public NACL outbound entry rules
 resource "aws_network_acl_rule" "public_nacl_outbound" {
-  count = length(var.public_subnets_cidr_with_azs) != 0 ? length(var.public_outbound_acl_rules) : 0
+  count = local.create_public_subnets ? length(var.public_outbound_acl_rules) : 0
   network_acl_id = aws_network_acl.public_nacl[0].id
 
   rule_number    = var.public_outbound_acl_rules[count.index]["rule_number"]
@@ -135,21 +137,22 @@ resource "aws_security_group" "public_sg" {
 # Private Subnets
 ################################################################################
 resource "aws_subnet" "private" {
-  for_each   = var.private_subnets_cidr_with_azs
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = each.value
 
-  availability_zone       = each.key
+  count = local.create_private_subnets ? length(var.azs) : 0
+  vpc_id     = aws_vpc.vpc.id
+  cidr_block = var.private_subnets[count.index]
+
+  availability_zone       = var.azs[count.index]
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "Private-${each.key}"
+    Name = "Private-${var.azs[count.index]}"
   }
 }
 
 # There are as many routing tables as the number of NAT gateways
 locals {
-  private_rt_count = length(var.private_subnets_cidr_with_azs) != 0 ? var.enable_single_nat || var.one_nat_gateway_per_subnet ? local.nat_gateway_count: 1 : 0
+  private_rt_count = local.create_private_subnets ? var.enable_single_nat || var.one_nat_gateway_per_subnet ? local.nat_gateway_count: 1 : 0
 }
 resource "aws_route_table" "private-rt" {
   count = local.private_rt_count
@@ -160,7 +163,7 @@ resource "aws_route_table" "private-rt" {
 }
 
 resource "aws_route_table_association" "private_rt_association" {
-  count = length(var.private_subnets_cidr_with_azs)
+  count = local.create_private_subnets ? length(var.azs) : 0
   subnet_id      = local.private_subnets_ids[count.index]
   route_table_id = local.enable_nat_per_subnet ? aws_route_table.private-rt[count.index].id : aws_route_table.private-rt[0].id
 
@@ -182,7 +185,7 @@ resource "aws_route" "private_rt_entry" {
 # Private Network ACLs
 ################################################################################
 resource "aws_network_acl" "private_nacl" {
-  count = length(var.private_subnets_cidr_with_azs) != 0 ? 1 : 0
+  count = local.create_private_subnets ? 1 : 0
   vpc_id = aws_vpc.vpc.id
   tags = {
     Name = "Private NACL-traffic"
@@ -191,14 +194,14 @@ resource "aws_network_acl" "private_nacl" {
 
 # Private subnet NACL Association
 resource "aws_network_acl_association" "private_nacl_association" {
-  count = length(var.private_subnets_cidr_with_azs) != 0 ? length(local.private_subnets_ids) : 0
+  count = local.create_private_subnets ? length(local.private_subnets_ids) : 0
   network_acl_id = aws_network_acl.private_nacl[0].id
   subnet_id      = local.private_subnets_ids[count.index]
 }
 
 # Private NACL inbound entry rules
 resource "aws_network_acl_rule" "private_inbound" {
-   count = length(var.private_subnets_cidr_with_azs) != 0 ? length(var.private_inbound_acl_rules) : 0
+   count = local.create_private_subnets ? length(var.private_inbound_acl_rules) : 0
 
   network_acl_id = aws_network_acl.private_nacl[0].id
 
@@ -213,7 +216,7 @@ resource "aws_network_acl_rule" "private_inbound" {
 
 # Private NACL outbound entry rules
 resource "aws_network_acl_rule" "private_outbound" {
-  count = length(var.private_subnets_cidr_with_azs) != 0 ? length(var.private_inbound_acl_rules) : 0
+  count = local.create_private_subnets ? length(var.private_inbound_acl_rules) : 0
 
   network_acl_id = aws_network_acl.private_nacl[0].id
 
@@ -245,7 +248,7 @@ resource "aws_security_group" "private_sg" {
 # Internet Gateway
 ################################################################################
 resource "aws_internet_gateway" "igw" {
-  count  = length(var.public_subnets_cidr_with_azs) != 0 ? 1 : 0
+  count  = local.create_public_subnets ? 1 : 0
   vpc_id = aws_vpc.vpc.id
 
   tags = {
@@ -258,7 +261,7 @@ resource "aws_internet_gateway" "igw" {
 # NAT Gateway
 ################################################################################
  locals {
-   nat_gateway_count = var.enable_single_nat ? 1 : length(var.private_subnets_cidr_with_azs)
+   nat_gateway_count = var.enable_single_nat ? 1 : length(var.azs)
    nat_gateway_ids = concat(
     aws_nat_gateway.single_nat[*].id,
     aws_nat_gateway.nat_per_subnet[*].id
@@ -289,7 +292,7 @@ resource "aws_eip" "nat" {
 
 # Elastic IPs for NAT Gateway Per AZs
 resource "aws_eip" "eip_nat_per_subnet" {
-  count  = local.enable_nat_per_subnet ? length(var.public_subnets_cidr_with_azs) : 0
+  count  = local.enable_nat_per_subnet ? length(var.azs) : 0
   domain = "vpc"
 }
 
