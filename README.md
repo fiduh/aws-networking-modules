@@ -25,7 +25,7 @@ Best-practices implementation of a piece of infrastructure, such as a VPC, EKS C
 #### Using a Terraform Module
 To use a module in your Terraform templates, create module resources and set its source field to the GIT URL of this repo. You should also set the ref parameter so you're fixed to a specific version of this repo, as the master branch may have backward incompatible changes. For example, to use <code>v1.0.8</code> of the VPC module, you would add the following:
 
-```
+```hcl
 
 module "vpc" {
   source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
