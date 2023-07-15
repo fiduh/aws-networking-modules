@@ -27,27 +27,31 @@ To use a module in your Terraform templates, create module resources and set its
 
 ```hcl
 
+data "aws_availability_zones" "available_azs" {
+  state = "available"
+}
+
+locals {
+  azs = slice(data.aws_availability_zones.available_azs.names, 0, 2)
+  vpc_cidr = "10.0.0.0/21"
+}
+
 module "vpc" {
   source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
-  name = "microservices-vpc"
-  vpc_cidr_block = "10.0.0.0/21"
+  name = "vpc-app"
+  azs = local.azs
+  vpc_cidr_block = local.vpc_cidr
 
-  public_subnets_cidr_with_azs = {
-  "us-east-1a" = "10.0.0.0/24"
-  "us-east-1b" = "10.0.1.0/24"
-  }
-
-  private_subnets_cidr_with_azs = {
-  "us-east-1a" = "10.0.2.0/24"
-  "us-east-1b" = "10.0.3.0/24"
-  }
+  public_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k)]
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k + 3)]
   
   enable_single_nat = true
-  one_nat_gateway_per_az = true
+  one_nat_gateway_per_az = false
 
   tags = {
     ManagedBy : "Terraform" 
-  } 
+  }
+}
 
 ```
 
