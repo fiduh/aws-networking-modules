@@ -45,8 +45,8 @@ module "vpc" {
   name = "vpc-app"
   vpc_cidr_block = "10.0.0.0/21"
 
-  public_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k)]
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k + 3)]
+  public_subnets = [for k, v in local.azs : cidrsubnet("10.0.0.0/21", 3, k)]
+  private_subnets = [for k, v in local.azs : cidrsubnet("10.0.0.0/21", 3, k + 3)]
   
   enable_single_nat = true
   one_nat_gateway_per_az = false
