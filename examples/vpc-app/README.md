@@ -40,13 +40,24 @@ Your development environment or CI/CD Server should have Terraform > 1.0.0 insta
 
 
 ```hcl
+
+data "aws_availability_zones" "available_azs" {
+  state = "available"
+}
+
+locals {
+  azs = slice(data.aws_availability_zones.available_azs.names, 0, 2)
+  vpc_cidr = "10.0.0.0/21"
+}
+
 module "vpc" {
   source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
   name = "vpc-app"
-  vpc_cidr_block = "10.0.0.0/21"
+  azs = local.azs
+  vpc_cidr_block = local.vpc_cidr
 
-  public_subnets = [for k, v in local.azs : cidrsubnet("10.0.0.0/21", 3, k)]
-  private_subnets = [for k, v in local.azs : cidrsubnet("10.0.0.0/21", 3, k + 3)]
+  public_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k)]
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k + 3)]
   
   enable_single_nat = true
   one_nat_gateway_per_az = false
