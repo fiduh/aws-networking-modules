@@ -17,7 +17,7 @@ Configure terraform backend to use the S3 bucket to store your .tfstate file and
 Make sure your backend key is the same as the folder path `examples/vpc-app/terraform.tfstate`, this gives you a 1:1 mapping between the layout of your terraform code in version control and your Terraform state files in S3. 
 
 
-```
+```hcl
 
 terraform {
   backend "s3" {
@@ -39,21 +39,14 @@ Your development environment or CI/CD Server should have Terraform > 1.0.0 insta
 ## Usage
 
 
-```
+```hcl
 module "vpc" {
   source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
   name = "vpc-app"
   vpc_cidr_block = "10.0.0.0/21"
 
-  public_subnets_cidr_with_azs = {
-  "us-east-1a" = "10.0.0.0/24"
-  "us-east-1b" = "10.0.1.0/24"
-  }
-
-  private_subnets_cidr_with_azs = {
-  "us-east-1a" = "10.0.2.0/24"
-  "us-east-1b" = "10.0.3.0/24"
-  }
+  public_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k)]
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k + 3)]
   
   enable_single_nat = true
   one_nat_gateway_per_az = false
@@ -61,11 +54,12 @@ module "vpc" {
   tags = {
     ManagedBy : "Terraform" 
   }
+}
 
 ```
 
 To run this example you need to execute:
-```
+```bash
 terraform init
 terraform plan
 terraform apply
