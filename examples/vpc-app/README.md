@@ -60,7 +60,7 @@ module "vpc" {
   private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 3, k + 3)]
   
   enable_single_nat = true
-  one_nat_gateway_per_az = false
+  one_nat_gateway_per_subnet = false
 
   tags = {
     ManagedBy : "Terraform" 
