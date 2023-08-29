@@ -37,7 +37,7 @@ locals {
 }
 
 module "vpc" {
-  source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
+  source = "github.com/fiduh/aws-networking-modules//modules/vpc?ref=v0.1.0"
   name = "vpc-app"
   azs = local.azs
   vpc_cidr_block = local.vpc_cidr
