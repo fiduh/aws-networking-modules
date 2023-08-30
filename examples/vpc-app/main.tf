@@ -29,7 +29,7 @@ locals {
 }
 
 module "microservices-vpc" {
-  # source = "github.com/osemiduh/aws-networking-modules//modules/vpc?ref=v0.1.2"
+  # source = "github.com/fiduh/aws-networking-modules//modules/vpc?ref=v0.1.2"
   source         = "../../modules/vpc"
   vpc_name       = "microservice-vpc"
   vpc_cidr_block = local.vpc_cidr
